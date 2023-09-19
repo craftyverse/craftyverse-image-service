@@ -8,10 +8,13 @@ import {
   errorHandler,
   NotFoundError,
 } from "@craftyverse-au/craftyverse-common";
+import { uploadImageRouter } from "./routes/upload-image-route";
 
 const app = express();
+
 app.set("trust proxy", true);
 app.use(json());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   cookieSession({
     signed: false,
@@ -20,6 +23,7 @@ app.use(
 );
 
 app.use(currentUser);
+app.use(uploadImageRouter);
 
 app.all("*", async () => {
   throw new NotFoundError("The route that you have requested does not exist");
