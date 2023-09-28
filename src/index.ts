@@ -11,10 +11,6 @@ const start = async () => {
     throw new Error("LOCATION_DATABASE_MONGODB_URI is not supplied");
   }
 
-  if (!process.env.NATS_CLUSTER_ID) {
-    throw new Error("NATS_CLUSTER_ID is not supplied");
-  }
-
   if (
     !process.env.AWS_ACCESS_KEY ||
     !process.env.AWS_SECRET ||
@@ -24,20 +20,6 @@ const start = async () => {
   }
 
   try {
-    natsWrapper.connect(
-      process.env.NATS_CLUSTER_ID!,
-      process.env.NATS_CLIENT_ID!,
-      process.env.NATS_URL!
-    );
-
-    natsWrapper.client.on("close", () => {
-      console.log("NATS connection closed!");
-      process.exit();
-    });
-
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM", () => natsWrapper.client.close());
-
     console.log("connecting to mongodb...");
     await mongoose.connect(process.env.IMAGE_DATABASE_MONGODB_URI as string);
     console.log("connected to mongodb :)");

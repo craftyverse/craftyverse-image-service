@@ -4,7 +4,6 @@ import crypto from "crypto";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { BadRequestError } from "@craftyverse-au/craftyverse-common";
 import { S3BucketClient } from "../config/aws.config";
-import { ImageUploadedPublisher } from "../events/publishers/image-uploaded-publisher";
 import { natsWrapper } from "../services/nats-wrapper";
 
 const router = express.Router();
@@ -23,7 +22,6 @@ router.post(
   async (req: Request, res: Response) => {
     if (!req.file) {
       throw new BadRequestError("There is no file uploaded in the request!");
-      new ImageUploadedPublisher(natsWrapper.client).publish({});
     }
 
     const imageName: string = randomImageName();
@@ -37,11 +35,6 @@ router.post(
 
     const uploadImageCommand = new PutObjectCommand(params);
     await S3BucketClient.send(uploadImageCommand);
-
-    new ImageUploadedPublisher(natsWrapper.client).publish({
-      imageName: imageName,
-      contentType: req.file.mimetype,
-    });
 
     res.status(201).send("success!");
   }
