@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import { app } from "./app";
-import { natsWrapper } from "./services/nats-wrapper";
+import { awsSnsClient, awsSqsClient } from "@craftyverse-au/craftyverse-common";
+import { createImageUploadedTopic } from "./events/create-event-definitions";
+import { awsConfig } from "./config/aws-config";
+import { imageQueueVariables } from "./events/variables";
+import { SQSClientConfig } from "@aws-sdk/client-sqs";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -14,10 +18,28 @@ const start = async () => {
   if (
     !process.env.AWS_ACCESS_KEY ||
     !process.env.AWS_SECRET ||
-    !process.env.AWS_S3_BUCKET_REGION
+    !process.env.AWS_REGION
   ) {
     throw new Error("AWS credentials are not supplied");
   }
+
+  // Create SNS location created Topic and SQS location created Queue
+  const topicArn = await createImageUploadedTopic();
+  console.log("This is the topic ARN: ", topicArn);
+
+  const sqsQueueAttributes = {
+    delaySeconds: "0",
+    messageRetentionPeriod: "604800", // 7 days
+    receiveMessageWaitTimeSeconds: "0",
+  };
+
+  const createLocationQueue = await awsSqsClient.createSqsQueue(
+    awsConfig as SQSClientConfig,
+    imageQueueVariables.IMAGE_UPLOADED_QUEUE,
+    sqsQueueAttributes
+  );
+
+  console.log("This is the new queue: ", createLocationQueue);
 
   try {
     console.log("connecting to mongodb...");
@@ -29,6 +51,7 @@ const start = async () => {
   }
 
   app.listen(5000, () => {
+    console.log("Connected to AWS ecosystem...");
     console.log("listening on port 4000");
   });
 };

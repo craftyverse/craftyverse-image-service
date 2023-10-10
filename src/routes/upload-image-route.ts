@@ -3,8 +3,7 @@ import multer from "multer";
 import crypto from "crypto";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { BadRequestError } from "@craftyverse-au/craftyverse-common";
-import { S3BucketClient } from "../config/aws.config";
-import { natsWrapper } from "../services/nats-wrapper";
+import { S3BucketClient } from "../config/aws-config";
 
 const router = express.Router();
 
@@ -26,14 +25,14 @@ router.post(
 
     const imageName: string = randomImageName();
 
-    const params = {
+    const uploadImageParams = {
       Bucket: awsS3BucketName,
       Key: imageName,
       Body: req.file.buffer,
       ContentType: req.file.mimetype,
     };
 
-    const uploadImageCommand = new PutObjectCommand(params);
+    const uploadImageCommand = new PutObjectCommand(uploadImageParams);
     await S3BucketClient.send(uploadImageCommand);
 
     res.status(201).send("success!");

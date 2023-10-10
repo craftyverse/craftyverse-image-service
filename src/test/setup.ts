@@ -9,8 +9,6 @@ declare global {
 let mongoDb: any;
 let mongoDbUri: any;
 
-jest.mock("../services/nats-wrapper");
-
 // Before all test suite, create a mock mongodb connection along with
 // a connection string
 beforeAll(async () => {
