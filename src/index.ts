@@ -5,6 +5,8 @@ import { createImageUploadedTopic } from "./events/create-event-definitions";
 import { awsConfig } from "./config/aws-config";
 import { imageQueueVariables } from "./events/variables";
 import { SQSClientConfig } from "@aws-sdk/client-sqs";
+import { awsS3Client } from "./services/s3-service";
+import { S3ClientConfig } from "@aws-sdk/client-s3";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -40,6 +42,14 @@ const start = async () => {
   );
 
   console.log("This is the new queue: ", createLocationQueue);
+
+  // Initialing the S3 bucket
+  const imageBucket = await awsS3Client.createS3Bucket(
+    awsConfig as S3ClientConfig,
+    "craftyverse-image-bucket"
+  );
+
+  console.log("This is the new bucket", imageBucket);
 
   try {
     console.log("connecting to mongodb...");
