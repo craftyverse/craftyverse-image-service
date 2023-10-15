@@ -2,13 +2,13 @@ import express from "express";
 import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
+import { uploadImageRouter } from "./routes/upload-image-route";
 
 import {
   currentUser,
   errorHandler,
   NotFoundError,
 } from "@craftyverse-au/craftyverse-common";
-import { uploadImageRouter } from "./routes/upload-image-route";
 
 const app = express();
 

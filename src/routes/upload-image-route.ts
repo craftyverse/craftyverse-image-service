@@ -1,45 +1,79 @@
 import express, { Request, Response } from "express";
 import multer from "multer";
 import crypto from "crypto";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+
+import { awsS3Client } from "../services/s3-service";
+import { awsConfig } from "../config/aws-config";
+import { imageBucketVariables } from "../events/variables";
+import { imageRequestSchema } from "../schemas/image-schema";
 import { Image } from "../models/Image";
+
 import {
   BadRequestError,
   RequestValidationError,
 } from "@craftyverse-au/craftyverse-common";
-import { NewImageRequest, imageRequestSchema } from "../schemas/image-schema";
 
 const router = express.Router();
 
+// Multer setup
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const awsS3BucketName = process.env.AWS_S3_BUCKET_NAME;
-
-const randomImageName = (bytes = 32) =>
-  crypto.randomBytes(bytes).toString("hex");
+// Creating a random image name
+const randomImageName = (bytes = 32) => {
+  return crypto.randomBytes(bytes).toString("hex");
+};
 
 router.post(
   "/api/image/uploadImage",
   upload.single("image"),
   async (req: Request, res: Response) => {
-    // if (!req.file) {
-    //   throw new BadRequestError("There is no file uploaded in the request!");
-    // }
+    const randomFileName = randomImageName();
+    const requestedUploadImage = req.file;
+    const imageRequestMetadata = imageRequestSchema.safeParse(req.body);
 
-    // const imageName: string = randomImageName();
+    console.log("This is the request body: ", req.body);
+    console.log("This is the request image/file", req.file);
+    console.log("This is the request file name: ", randomFileName);
 
-    // const uploadImageParams = {
-    //   Bucket: awsS3BucketName,
-    //   Key: imageName,
-    //   Body: req.file.buffer,
-    //   ContentType: req.file.mimetype,
-    // };
+    if (!requestedUploadImage) {
+      throw new BadRequestError("No image was uploaded");
+    }
 
-    // const uploadImageCommand = new PutObjectCommand(uploadImageParams);
-    // await S3BucketClient.send(uploadImageCommand);
+    if (!imageRequestMetadata.success) {
+      throw new RequestValidationError(imageRequestMetadata.error.issues);
+    }
 
-    res.status(201).send("Image successfully uploaded!");
+    const imageRequestMetadataInfo = imageRequestMetadata.data;
+
+    console.log(
+      "This is the image request metadata: ",
+      imageRequestMetadataInfo
+    );
+
+    const uploadImageResponse = await awsS3Client.uploadFile(
+      awsConfig,
+      requestedUploadImage,
+      {
+        bucketName: imageBucketVariables.IMAGE_BUCKET_NAME,
+        key: randomFileName,
+        contentType: requestedUploadImage.mimetype,
+      }
+    );
+
+    const uploadImageMetadata = Image.build({
+      imageLocationId: imageRequestMetadataInfo.imageLocationId,
+      imageCategoryId: imageRequestMetadataInfo.imageCategoryId,
+      imageFileName: imageRequestMetadataInfo.imageFileName,
+      imageDescription: imageRequestMetadataInfo.imageDescription,
+      imageProductId: imageRequestMetadataInfo.imageProductId,
+    });
+
+    const uploadImageMetadataResponse = await uploadImageMetadata.save();
+
+    console.log("image database record: ", uploadImageMetadataResponse);
+    console.log("This is the upload image response: ", uploadImageResponse);
+    res.send("Hello World!");
   }
 );
 

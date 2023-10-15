@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
 export interface ImageFields {
-  imageNameId: string;
-  imageName: string;
-  imageCategory: string;
+  imageLocationId: string;
+  imageCategoryId: string;
+  imageFileName: string;
   imageDescription: string;
+  imageProductId: string;
 }
 
 export interface ImageModel extends mongoose.Model<ImageDocument> {
@@ -12,23 +13,25 @@ export interface ImageModel extends mongoose.Model<ImageDocument> {
 }
 
 export interface ImageDocument extends mongoose.Document {
-  imageNameId: string;
-  imageName: string;
-  imageCategory: string;
+  imageLocationId: string;
+  imageCategoryId: string;
+  imageFileName: string;
   imageDescription: string;
+  imageProductId: string;
 }
 
 const imageSchema = new mongoose.Schema(
   {
-    imageNameId: { type: String, required: true },
-    imageName: { type: String, required: true },
-    imageCategory: { type: String, required: true },
+    imageLocationId: { type: String, required: true },
+    imageCategoryId: { type: String, required: true },
+    imageFileName: { type: String, required: true },
     imageDescription: { type: String, required: true },
+    imageProductId: { type: String, required: true },
   },
   {
     toJSON: {
       transform(doc, ret) {
-        ret.imageId = ret._id;
+        ret.id = ret._id;
         delete ret._id;
       },
     },

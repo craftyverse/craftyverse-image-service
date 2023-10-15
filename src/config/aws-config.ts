@@ -1,11 +1,21 @@
 // This file will instantiate all of the different AWS resources it needs for the service
-import { SNSClientConfig } from "@aws-sdk/client-sns";
+import { S3ClientConfig } from "@aws-sdk/client-s3";
 
-export const awsConfig: SNSClientConfig = {
+export const awsConfig: S3ClientConfig = {
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY!,
     secretAccessKey: process.env.AWS_SECRET!,
   },
   region: process.env.AWS_REGION!,
-  endpoint: process.env.AWS_LOCALSTACK_URI!,
+  endpoint: process.env.LOCALSTACK_HOST_URL!,
+};
+
+export const S3Config = {
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_SECRET!,
+  },
+  region: process.env.AWS_REGION!,
+  endpoint: process.env.LOCALSTACK_HOST_URL!,
+  forcePathStyle: true,
 };
