@@ -1,5 +1,6 @@
 export enum imageEventVariables {
   IMAGE_UPLOADED_EVENT = "image_uploaded",
+  IMAGE_BATCH_UPLOADED_EVENT = "image_batch_uploaded",
 }
 
 export enum imageQueueVariables {

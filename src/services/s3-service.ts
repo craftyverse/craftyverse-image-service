@@ -95,6 +95,7 @@ export const awsS3Client = (() => {
 
     const putItemCommand = new PutObjectCommand(uploadFileCommand);
     const uploadedImageResponse = await s3Client.send(putItemCommand);
+    console.log(uploadedImageResponse);
     return uploadedImageResponse;
   };
 

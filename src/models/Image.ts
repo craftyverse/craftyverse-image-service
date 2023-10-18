@@ -4,6 +4,7 @@ export interface ImageFields {
   imageLocationId: string;
   imageCategoryId: string;
   imageFileName: string;
+  imageFileOriginalName: string;
   imageDescription: string;
   imageProductId: string;
 }
@@ -16,6 +17,7 @@ export interface ImageDocument extends mongoose.Document {
   imageLocationId: string;
   imageCategoryId: string;
   imageFileName: string;
+  imageFileOriginalName: string;
   imageDescription: string;
   imageProductId: string;
 }
@@ -25,6 +27,7 @@ const imageSchema = new mongoose.Schema(
     imageLocationId: { type: String, required: true },
     imageCategoryId: { type: String, required: true },
     imageFileName: { type: String, required: true },
+    imageFileOriginalName: { type: String, required: true },
     imageDescription: { type: String, required: true },
     imageProductId: { type: String, required: true },
   },

@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node-dev --poll src/index.ts",
-    "test": "jest --no-cache --verbose --coverage --forceExit"
+    "localstack:test:start": "EDGE_PORT=4666 localstack start",
+    "localstack:test:stop": "docker kill localstack_main",
+    "timeout": "node -e \"require('node:timers').setTimeout(() => {}, 7000)\"",
+    "test": "npm run localstack:test:start & (npm run timeout && jest --no-cache --verbose --coverage --forceExit) && npm run localstack:test:stop"
   },
   "jest": {
     "preset": "ts-jest",

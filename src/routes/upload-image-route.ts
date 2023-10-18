@@ -4,9 +4,11 @@ import crypto from "crypto";
 
 import { awsS3Client } from "../services/s3-service";
 import { awsConfig } from "../config/aws-config";
-import { imageBucketVariables } from "../events/variables";
-import { imageRequestSchema } from "../schemas/image-schema";
+import { imageBucketVariables, imageEventVariables } from "../events/variables";
+import { imageRequestSchema, NewImageResponse } from "../schemas/image-schema";
 import { Image } from "../models/Image";
+import { awsSnsClient } from "@craftyverse-au/craftyverse-common";
+import redisClient from "../services/redis-service";
 
 import {
   BadRequestError,
@@ -31,6 +33,10 @@ router.post(
     const randomFileName = randomImageName();
     const requestedUploadImage = req.file;
     const imageRequestMetadata = imageRequestSchema.safeParse(req.body);
+    const topicArn = await awsSnsClient.getFullTopicArnByTopicName(
+      awsConfig,
+      imageEventVariables.IMAGE_UPLOADED_EVENT
+    );
 
     console.log("This is the request body: ", req.body);
     console.log("This is the request image/file", req.file);
@@ -42,6 +48,10 @@ router.post(
 
     if (!imageRequestMetadata.success) {
       throw new RequestValidationError(imageRequestMetadata.error.issues);
+    }
+
+    if (!topicArn) {
+      throw new BadRequestError("Something went wrong!");
     }
 
     const imageRequestMetadataInfo = imageRequestMetadata.data;
@@ -61,19 +71,53 @@ router.post(
       }
     );
 
+    if (!uploadImageResponse) {
+      throw new BadRequestError("Image has not been uploaded");
+    }
+
     const uploadImageMetadata = Image.build({
       imageLocationId: imageRequestMetadataInfo.imageLocationId,
       imageCategoryId: imageRequestMetadataInfo.imageCategoryId,
-      imageFileName: imageRequestMetadataInfo.imageFileName,
+      imageFileName: randomFileName,
+      imageFileOriginalName: requestedUploadImage.originalname,
       imageDescription: imageRequestMetadataInfo.imageDescription,
       imageProductId: imageRequestMetadataInfo.imageProductId,
     });
 
     const uploadImageMetadataResponse = await uploadImageMetadata.save();
 
+    const imageMetadataResposne: NewImageResponse = {
+      imageId: uploadImageMetadataResponse._id,
+      imageLocationId: uploadImageMetadataResponse.imageLocationId,
+      imageCategoryId: uploadImageMetadataResponse.imageCategoryId,
+      imageFileName: uploadImageMetadataResponse.imageFileName,
+      imageFileOriginalName: uploadImageMetadataResponse.imageFileOriginalName,
+      imageDescription: uploadImageMetadataResponse.imageDescription,
+      imageProductId: uploadImageMetadataResponse.imageProductId,
+    };
+
+    redisClient.set(imageMetadataResposne.imageId, imageMetadataResposne);
+
+    const imageMetadataResponseString = JSON.stringify(imageMetadataResposne);
+
+    const publishSnsMessageParams = {
+      message: imageMetadataResponseString,
+      subject: "create_image_event",
+      topicArn,
+    };
+
+    const uploadImageMessage = await awsSnsClient.publishSnsMessage(
+      awsConfig,
+      publishSnsMessageParams
+    );
+
+    if (!uploadImageMessage) {
+      throw new BadRequestError("Something went wrong!");
+    }
+
     console.log("image database record: ", uploadImageMetadataResponse);
     console.log("This is the upload image response: ", uploadImageResponse);
-    res.send("Hello World!");
+    res.status(201).send({ ...imageMetadataResposne });
   }
 );
 

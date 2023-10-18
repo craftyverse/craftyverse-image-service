@@ -1,7 +1,7 @@
 // This file will instantiate all of the different AWS resources it needs for the service
 import { S3ClientConfig } from "@aws-sdk/client-s3";
 
-export const awsConfig: S3ClientConfig = {
+export const awsConfig = {
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY!,
     secretAccessKey: process.env.AWS_SECRET!,
