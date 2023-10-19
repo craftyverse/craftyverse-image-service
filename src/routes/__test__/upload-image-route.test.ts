@@ -2,7 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import path from "path";
 import { awsSnsClient, awsSqsClient } from "@craftyverse-au/craftyverse-common";
-import { imageQueueVariables } from "../../events/variables";
+import { imageQueueVariables } from "../../events/event-variables";
 
 describe("POST /api/image/uploadImage", () => {
   const mockAwsConfig = {

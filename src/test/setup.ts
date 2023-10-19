@@ -6,7 +6,10 @@ import { awsS3Client } from "../services/s3-service";
 import { awsSnsClient, awsSqsClient } from "@craftyverse-au/craftyverse-common";
 import { SQSClient, SQSClientConfig } from "@aws-sdk/client-sqs";
 import { SNSClient } from "@aws-sdk/client-sns";
-import { imageBucketVariables, imageQueueVariables } from "../events/variables";
+import {
+  imageBucketVariables,
+  imageQueueVariables,
+} from "../events/event-variables";
 import { createImageUploadedTopic } from "../events/create-event-definitions";
 
 declare global {

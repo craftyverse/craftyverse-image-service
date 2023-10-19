@@ -4,7 +4,10 @@ import crypto from "crypto";
 
 import { awsS3Client } from "../services/s3-service";
 import { awsConfig } from "../config/aws-config";
-import { imageBucketVariables, imageEventVariables } from "../events/variables";
+import {
+  imageBucketVariables,
+  imageEventVariables,
+} from "@craftyverse-au/craftyverse-common";
 import { imageRequestSchema, NewImageResponse } from "../schemas/image-schema";
 import { Image } from "../models/Image";
 import { awsSnsClient } from "@craftyverse-au/craftyverse-common";
@@ -110,6 +113,8 @@ router.post(
       awsConfig,
       publishSnsMessageParams
     );
+
+    console.log("This is the uploadImageMessage: ", uploadImageMessage);
 
     if (!uploadImageMessage) {
       throw new BadRequestError("Something went wrong!");

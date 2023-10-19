@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 import { app } from "./app";
-import { awsSnsClient, awsSqsClient } from "@craftyverse-au/craftyverse-common";
 import {
-  createImageUploadedTopic,
-  createBatchImageUploadedTopic,
-} from "./events/create-event-definitions";
+  awsSnsClient,
+  awsSqsClient,
+  imageQueueVariables,
+  imageBucketVariables,
+} from "@craftyverse-au/craftyverse-common";
+import { createImageUploadedTopic } from "./events/create-event-definitions";
 import { S3Config, awsConfig } from "./config/aws-config";
-import { imageQueueVariables } from "./events/variables";
 import { SQSClientConfig } from "@aws-sdk/client-sqs";
 import { awsS3Client } from "./services/s3-service";
-import { imageBucketVariables } from "./events/variables";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -31,12 +31,6 @@ const start = async () => {
   // Create SNS location created Topic and SQS location created Queue
   const topicArn = await createImageUploadedTopic();
   console.log("This is the topic ARN: ", topicArn);
-
-  const batchUploadImageTopicArn = await createBatchImageUploadedTopic();
-  console.log(
-    "This is the batch upload image topic ARN: ",
-    batchUploadImageTopicArn
-  );
 
   const sqsQueueAttributes = {
     delaySeconds: "0",

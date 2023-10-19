@@ -3,7 +3,6 @@ import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
 import { uploadImageRouter } from "./routes/upload-image-route";
-import { uploadBatchImageRouter } from "./routes/upload-batch-image-route";
 
 import {
   currentUser,
@@ -25,7 +24,6 @@ app.use(
 
 app.use(currentUser);
 app.use(uploadImageRouter);
-app.use(uploadBatchImageRouter);
 
 app.all("*", async () => {
   throw new NotFoundError("The route that you have requested does not exist");

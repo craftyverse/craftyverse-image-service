@@ -16,6 +16,6 @@ export const S3Config = {
     secretAccessKey: process.env.AWS_SECRET!,
   },
   region: process.env.AWS_REGION!,
-  endpoint: process.env.LOCALSTACK_HOST_URL!,
+  endpoint: process.env.LOCALSTACK_HOST_URL_S3!,
   forcePathStyle: true,
 };
