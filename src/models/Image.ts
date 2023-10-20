@@ -6,7 +6,7 @@ export interface ImageFields {
   imageFileName: string;
   imageFileOriginalName: string;
   imageDescription: string;
-  imageProductId: string;
+  imageProductName: string;
 }
 
 export interface ImageModel extends mongoose.Model<ImageDocument> {
@@ -19,7 +19,7 @@ export interface ImageDocument extends mongoose.Document {
   imageFileName: string;
   imageFileOriginalName: string;
   imageDescription: string;
-  imageProductId: string;
+  imageProductName: string;
 }
 
 const imageSchema = new mongoose.Schema(
@@ -29,7 +29,7 @@ const imageSchema = new mongoose.Schema(
     imageFileName: { type: String, required: true },
     imageFileOriginalName: { type: String, required: true },
     imageDescription: { type: String, required: true },
-    imageProductId: { type: String, required: true },
+    imageProductName: { type: String, required: true },
   },
   {
     toJSON: {

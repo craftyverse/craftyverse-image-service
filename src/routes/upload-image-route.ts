@@ -84,7 +84,7 @@ router.post(
       imageFileName: randomFileName,
       imageFileOriginalName: requestedUploadImage.originalname,
       imageDescription: imageRequestMetadataInfo.imageDescription,
-      imageProductId: imageRequestMetadataInfo.imageProductId,
+      imageProductName: imageRequestMetadataInfo.imageProductName,
     });
 
     const uploadImageMetadataResponse = await uploadImageMetadata.save();
@@ -96,7 +96,7 @@ router.post(
       imageFileName: uploadImageMetadataResponse.imageFileName,
       imageFileOriginalName: uploadImageMetadataResponse.imageFileOriginalName,
       imageDescription: uploadImageMetadataResponse.imageDescription,
-      imageProductId: uploadImageMetadataResponse.imageProductId,
+      imageProductName: uploadImageMetadataResponse.imageProductName,
     };
 
     redisClient.set(imageMetadataResposne.imageId, imageMetadataResposne);

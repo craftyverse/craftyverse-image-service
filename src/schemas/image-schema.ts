@@ -4,7 +4,7 @@ export const imageRequestSchema = z.object({
   imageLocationId: z.string(),
   imageCategoryId: z.string(),
   imageDescription: z.string(),
-  imageProductId: z.string(),
+  imageProductName: z.string(),
 });
 
 export const imageResponseSchema = z.object({
@@ -14,7 +14,7 @@ export const imageResponseSchema = z.object({
   imageFileName: z.string(),
   imageFileOriginalName: z.string(),
   imageDescription: z.string(),
-  imageProductId: z.string(),
+  imageProductName: z.string(),
 });
 
 export type NewImageRequest = z.infer<typeof imageRequestSchema>;
