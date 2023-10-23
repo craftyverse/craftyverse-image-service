@@ -3,13 +3,14 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import { S3Client } from "@aws-sdk/client-s3";
 import { awsS3Client } from "../services/s3-service";
-import { awsSnsClient, awsSqsClient } from "@craftyverse-au/craftyverse-common";
-import { SQSClient, SQSClientConfig } from "@aws-sdk/client-sqs";
-import { SNSClient } from "@aws-sdk/client-sns";
 import {
+  awsSnsClient,
+  awsSqsClient,
   imageBucketVariables,
   imageQueueVariables,
-} from "../events/event-variables";
+} from "@craftyverse-au/craftyverse-common";
+import { SQSClient, SQSClientConfig } from "@aws-sdk/client-sqs";
+import { SNSClient } from "@aws-sdk/client-sns";
 import { createImageUploadedTopic } from "../events/create-event-definitions";
 
 declare global {
